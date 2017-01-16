@@ -81,9 +81,7 @@ class mysql_db
                 $con->close();
                 return false;
             }
-            $arr_result = $result->fetch_all();
-            $result->close();
-            return $arr_result;
+            return $result;
         } else {
             log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
