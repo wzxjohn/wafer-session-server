@@ -11,9 +11,9 @@ class mysql_db
 
     private $host= null;
     private $port= null;
-    private $user_name= null;
-    private $pass_wd = null;
-    private $data_base = null;
+    private $username= null;
+    private $passwd = null;
+    private $database = null;
 
     public function __construct()
     {
@@ -23,9 +23,9 @@ class mysql_db
         $config = $load_config->fc_load_config("system/db/db.ini");
         $this->host = $config['host'];
         $this->port = $config['port'];
-        $this->user_name = $config['user_name'];
-        $this->pass_wd = $config['pass_wd'];
-        $this->data_base = $config['data_base'];
+        $this->username = $config['user_name'];
+        $this->passwd = $config['pass_wd'];
+        $this->database = $config['data_base'];
     }
 
     /**
@@ -49,9 +49,9 @@ class mysql_db
      */
     public function query_db($sql)
     {
-        $con = mysql_connect($this->host . ':' . $this->port, $this->user_name, $this->pass_wd);
+        $con = mysql_connect($this->host . ':' . $this->port, $this->username, $this->passwd);
         if ($con) {
-            mysql_select_db($this->data_base, $con);
+            mysql_select_db($this->database, $con);
             $mysql_result = mysql_query($sql);
             if ($mysql_result === false) {
                 mysql_close($con);
@@ -73,22 +73,25 @@ class mysql_db
      */
     public function select_db($sql)
     {
-        $con = mysql_connect($this->host . ':' . $this->port, $this->user_name, $this->pass_wd);
-        if ($con) {
-            mysql_select_db($this->data_base, $con);
-            $arr_result = mysql_query($sql);
-            mysql_close($con);
-            if(mysql_num_rows($arr_result) < 1)
+        $con = new mysqli($this->host, $this->username, $this->passwd, $this->database, $this->port);
+        if (!$con->connect_error) {
+            $result = $con->query($sql);
+            if($result->num_rows < 1) {
+                $result->close();
+                $con->close();
                 return false;
+            }
+            $arr_result = $result->fetch_all();
+            $result->close();
             return $arr_result;
         } else {
-            log_message("ERROR","$sql mysql_connect_err");
+            log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
         }
     }
 
     public function init_db($sql){
-        $con = mysql_connect($this->host . ':' . $this->port, $this->user_name, $this->pass_wd);
+        $con = mysql_connect($this->host . ':' . $this->port, $this->username, $this->passwd);
         if ($con) {
             $result = mysql_query("$sql",$con);
             if($result===false){
