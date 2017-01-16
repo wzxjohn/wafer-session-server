@@ -73,6 +73,7 @@ class Cappinfo_Service
                 $arr_result['qcloud_appid'] = $row['qcloud_appid'];
                 $arr_result['ip'] = $row['ip'];
             }
+            $result->close();
             return $arr_result;
         } else {
             return false;

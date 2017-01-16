@@ -76,6 +76,7 @@ class Csessioninfo_Service
                 $arr_result['session_key'] = $row['session_key'];
                 $arr_result['user_info'] = $row['user_info'];
             }
+            $result->close();
             return $arr_result;
         } else {
             return false;
@@ -93,6 +94,7 @@ class Csessioninfo_Service
             while ($row = $result->fetch_array()) {
                 $id = $row['uuid'];
             }
+            $result->close();
             return $id;
         } else {
             return false;
@@ -109,6 +111,7 @@ class Csessioninfo_Service
             while ($row = $result->fetch_array()) {
                 $create_time = strtotime($row['create_time']);
             }
+            $result->close();
             if($create_time == false){
                 return false;
             }else{

@@ -82,7 +82,7 @@ class mysql_db
                 $con->close();
                 return false;
             }
-            return $result->fetch_array();
+            return $result;
         } else {
             log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
