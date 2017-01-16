@@ -49,19 +49,19 @@ class mysql_db
      */
     public function query_db($sql)
     {
-        $con = mysql_connect($this->host . ':' . $this->port, $this->username, $this->passwd);
-        if ($con) {
-            mysql_select_db($this->database, $con);
-            $mysql_result = mysql_query($sql);
+        $con = new mysqli($this->host, $this->username, $this->passwd, $this->database, $this->port);
+        if (!$con->connect_error) {
+            $con->set_charset("utf8mb4");
+            $mysql_result = $con->query($sql);
             if ($mysql_result === false) {
-                mysql_close($con);
-                log_message("ERROR","$sql mysql_err");
+                $con->close();
+                log_message("ERROR","$sql mysql_err $con->connect_errno $con->connect_error");
                 return false;
             }
-            mysql_close($con);
+            $con->close();
             return true;
         } else {
-            log_message("ERROR","$sql mysql_connect_err");
+            log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
         }
     }
@@ -75,13 +75,14 @@ class mysql_db
     {
         $con = new mysqli($this->host, $this->username, $this->passwd, $this->database, $this->port);
         if (!$con->connect_error) {
+            $con->set_charset("utf8mb4");
             $result = $con->query($sql);
             if($result->num_rows < 1) {
                 $result->close();
                 $con->close();
                 return false;
             }
-            return $result;
+            return $result->fetch_array();
         } else {
             log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
@@ -89,16 +90,17 @@ class mysql_db
     }
 
     public function init_db($sql){
-        $con = mysql_connect($this->host . ':' . $this->port, $this->username, $this->passwd);
-        if ($con) {
-            $result = mysql_query("$sql",$con);
+        $con = new mysqli($this->host, $this->username, $this->passwd, $this->database, $this->port);
+        if (!$con->connect_error) {
+            $con->set_charset("utf8mb4");
+            $result = $con->query("$sql",$con);
             if($result===false){
-                log_message("ERROR","$sql mysql_err");
+                log_message("ERROR","$sql mysql_err $con->connect_errno $con->connect_error");
                 return false;
             }
             return true;
         }else{
-            log_message("ERROR","$sql mysql_connect_err");
+            log_message("ERROR","$sql mysql_connect_err $con->connect_errno $con->connect_error");
             return false;
         }
     }
